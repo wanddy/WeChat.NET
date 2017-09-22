@@ -47,7 +47,7 @@ namespace WeChat.NET.HTTP
                 init_json = string.Format(init_json, uin.Value, sid.Value);
                 byte[] bytes = BaseService.SendPostRequest(_init_url + "&pass_ticket=" + LoginService.Pass_Ticket, init_json);
                 string init_str = Encoding.UTF8.GetString(bytes);
-
+                Console.Write("\nWxInit\n"+init_str);
                 JObject init_result = JsonConvert.DeserializeObject(init_str) as JObject;
 
                 foreach (JObject synckey in init_result["SyncKey"]["List"])  //同步键值
@@ -91,7 +91,7 @@ namespace WeChat.NET.HTTP
         {
             byte[] bytes = BaseService.SendGetRequest(_getcontact_url);
             string contact_str = Encoding.UTF8.GetString(bytes);
-
+            Console.Write("\nGetContact\n" + contact_str);
             return JsonConvert.DeserializeObject(contact_str) as JObject;     
         }
         /// <summary>
@@ -105,6 +105,7 @@ namespace WeChat.NET.HTTP
             {
                 sync_key += p.Key + "_" + p.Value + "%7C";
             }
+            //Console.Write("\nWxSyncCheck\n" + sync_key);
             sync_key = sync_key.TrimEnd('%','7','C');
 
             Cookie sid = BaseService.GetCookie("wxsid");
@@ -117,6 +118,7 @@ namespace WeChat.NET.HTTP
                 byte[] bytes = BaseService.SendGetRequest(_synccheck_url +"&_=" + DateTime.Now.Ticks);
                 if (bytes != null)
                 {
+                    //Console.Write("\nWxSyncCheck\n" + Encoding.UTF8.GetString(bytes));
                     return Encoding.UTF8.GetString(bytes);
                 }
                 else
@@ -146,16 +148,17 @@ namespace WeChat.NET.HTTP
             }
             sync_keys = sync_keys.TrimEnd(',');
             sync_json = string.Format(sync_json, uin.Value, sid.Value, _syncKey.Count, sync_keys, (long)(DateTime.Now.ToUniversalTime() - new System.DateTime(1970, 1, 1)).TotalMilliseconds, LoginService.SKey);
-
+            //Console.Write("\nWxSync\n" + sync_json);
             if (sid != null && uin != null)
             {
                 byte[] bytes = BaseService.SendPostRequest(_sync_url + sid.Value + "&lang=zh_CN&skey=" + LoginService.SKey + "&pass_ticket=" + LoginService.Pass_Ticket, sync_json);
                 string sync_str = Encoding.UTF8.GetString(bytes);
 
                 JObject sync_resul = JsonConvert.DeserializeObject(sync_str) as JObject;
-
+                
                 if (sync_resul["SyncKey"]["Count"].ToString() != "0")
                 {
+                    
                     _syncKey.Clear();
                     foreach (JObject key in sync_resul["SyncKey"]["List"])
                     {

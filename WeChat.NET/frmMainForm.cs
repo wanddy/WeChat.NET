@@ -141,7 +141,7 @@ namespace WeChat.NET
             {
                 WXService wxs = new WXService();
                 JObject init_result = wxs.WxInit();  //初始化
-                
+               
                 List<object> contact_all = new List<object>();
                 if (init_result != null)
                 {
@@ -170,7 +170,7 @@ namespace WeChat.NET
                         user.RemarkPYQuanPin = contact["RemarkPYQuanPin"].ToString();
                         user.Sex = contact["Sex"].ToString();
                         user.Signature = contact["Signature"].ToString();
-
+                        user.Alias = contact["Alias"].ToString();
                         _contact_latest.Add(user);
                     }
                 }
@@ -191,7 +191,7 @@ namespace WeChat.NET
                         user.RemarkPYQuanPin = contact["RemarkPYQuanPin"].ToString();
                         user.Sex = contact["Sex"].ToString();
                         user.Signature = contact["Signature"].ToString();
-
+                        user.Alias = contact["Alias"].ToString();
                         contact_all.Add(user);
                     }
                 }
@@ -221,6 +221,11 @@ namespace WeChat.NET
 
                 string sync_flag = "";
                 JObject sync_result;
+                List<WXUser> userlist = new List<WXUser>();
+                 foreach (var item in contact_all)
+                 {
+                     userlist.Add((WXUser)item);
+                 }
                 while (true)
                 {
                     sync_flag = wxs.WxSyncCheck();  //同步检查
@@ -236,8 +241,10 @@ namespace WeChat.NET
                         {
                             if (sync_result["AddMsgCount"] != null && sync_result["AddMsgCount"].ToString() != "0")
                             {
+                                Console.Write("\n----------WxSyncResult----------\n" + sync_result.ToString());
                                 foreach (JObject m in sync_result["AddMsgList"])
                                 {
+                                    Console.Write("\n[[[[AddMsgList]]]]\n" + m.ToString());
                                     string from = m["FromUserName"].ToString();
                                     string to = m["ToUserName"].ToString();
                                     string content = m["Content"].ToString();

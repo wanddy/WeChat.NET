@@ -151,6 +151,7 @@ namespace WeChat.NET.Controls
                 msg.Time = DateTime.Now;
 
                 _friendUser.SendMsg(msg, false);
+                textBox1.Text = "";
             }
         }
         /// <summary>

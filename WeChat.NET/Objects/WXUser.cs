@@ -12,6 +12,7 @@ namespace WeChat.NET.Objects
     /// </summary>
     public class WXUser
     {
+
         //用户id
         private string _userName;
         public string UserName
@@ -37,6 +38,13 @@ namespace WeChat.NET.Objects
             {
                 _nickName = value;
             }
+        }
+        private string alias;
+
+        public string Alias
+        {
+            get { return alias; }
+            set { alias = value; }
         }
         //头像url
         private string _headImgUrl;
@@ -223,7 +231,8 @@ namespace WeChat.NET.Objects
         /// <param name="msg"></param>
         public void ReceiveMsg(WXMsg msg)
         {
-            _recvedMsg.Add(msg.Time, msg);
+            if (!_recvedMsg.Keys.Contains(msg.Time))
+                _recvedMsg.Add(msg.Time, msg);
             if (MsgRecved != null)
             {
                 MsgRecved(msg);
@@ -276,7 +285,7 @@ namespace WeChat.NET.Objects
         public WXMsg GetLatestMsg()
         {
             WXMsg msg = null;
-            if (_sentMsg.Count > 0 && _recvedMsg.Count>0)
+            if (_sentMsg.Count > 0 && _recvedMsg.Count > 0)
             {
                 msg = _sentMsg.Last().Value.Time > _recvedMsg.Last().Value.Time ? _sentMsg.Last().Value : _recvedMsg.Last().Value;
             }
@@ -294,6 +303,8 @@ namespace WeChat.NET.Objects
             }
             return msg;
         }
+
+
     }
     /// <summary>
     /// 表示处理消息发送完成事件的方法
